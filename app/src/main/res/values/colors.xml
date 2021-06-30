@@ -11,6 +11,8 @@
 
     <color name="green">#7C9D39</color>
 
+    <color name="blue">#345DA7</color>
+
     <color name="red">#F18C8E</color>
 
     <color name="positiveButtonTextColor">@color/colorAccent</color>

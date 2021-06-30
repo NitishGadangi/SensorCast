@@ -26,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:text="Sensor Name"
                 android:layout_marginBottom="6dp"
-                style="@style/HeadingText"/>
+                style="@style/Heading1Text"/>
 
             <TextView
                 android:id="@+id/tvSensorDesc"
@@ -93,6 +93,15 @@
                 android:layout_marginBottom="8dp"
                 android:text="x: \ny: \nz:"
                 style="@style/SubHeadingText"/>
+
+            <TextView
+                android:id="@+id/tvGithubLink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/ClickableBackground"
+                android:textAlignment="center"
+                android:textColor="@color/blue"
+                android:text="@string/arduino_setup_link"/>
 
             <Button
                 android:id="@+id/btnCastSensor"

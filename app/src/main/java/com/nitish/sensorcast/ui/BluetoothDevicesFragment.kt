@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import com.nitish.sensorcast.R
 import com.nitish.sensorcast.databinding.FragmentBluetoothDevicesBinding
 import com.nitish.sensorcast.models.Status
@@ -29,9 +29,14 @@ class BluetoothDevicesFragment : Fragment(R.layout.fragment_bluetooth_devices) {
         viewModel.btMac.observe(viewLifecycleOwner, {
             binding.btnConnect.isEnabled = it != ""
             binding.tvBtInstruction.text = if (it == "")
-                "Select a Device from Above list"
+                "select a Device from Above list"
             else
-                "Selected Device with Mac : $it"
+                "selected Device with Mac : $it"
+        })
+
+        viewModel.isBtConnected.observe(viewLifecycleOwner, {
+            binding.btnClose.visibility =
+                if (it == Status.CONNECTED) View.VISIBLE else View.INVISIBLE
         })
     }
 
@@ -40,7 +45,9 @@ class BluetoothDevicesFragment : Fragment(R.layout.fragment_bluetooth_devices) {
         "Bluetooth Devices (${devices.size})".also {
             binding.tvDevicesCount.text = it
         }
-
+        if (devices.isEmpty()) "check your device bluetooth status and click on refresh".also {
+            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+        }
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, devices)
         binding.listDevices.adapter = adapter
 
@@ -49,11 +56,10 @@ class BluetoothDevicesFragment : Fragment(R.layout.fragment_bluetooth_devices) {
     private fun setUpListeners() {
         binding.listDevices.setOnItemClickListener { adapterView, view, i, l ->
             viewModel.updateMac((view as TextView).text.toString())
-            activity?.onBackPressed()
         }
 
         binding.btnClose.setOnClickListener {
-            viewModel.disconnect()
+            viewModel.disconnectBtDevice()
         }
 
         binding.btnRefresh.setOnClickListener {
@@ -61,7 +67,12 @@ class BluetoothDevicesFragment : Fragment(R.layout.fragment_bluetooth_devices) {
         }
 
         binding.btnConnect.setOnClickListener {
-            viewModel.establishBT()
+            if (viewModel.isBtConnected.value == Status.CONNECTED) {
+                viewModel.disconnectBtDevice().also {
+                    viewModel.connectBtDevice()
+                }
+            } else
+                viewModel.connectBtDevice()
         }
     }
 

@@ -13,7 +13,7 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/sensorLogsFragment"
@@ -22,7 +22,11 @@
     <fragment
         android:id="@+id/sensorDetailsFragment"
         android:name="com.nitish.sensorcast.ui.SensorDetailsFragment"
-        android:label="SensorDetailsFragment" />
+        android:label="SensorDetailsFragment" >
+        <argument
+            android:name="sensor"
+            app:argType="com.nitish.sensorcast.helpers.SensorDetails" />
+    </fragment>
     <fragment
         android:id="@+id/bluetoothDevicesFragment"
         android:name="com.nitish.sensorcast.ui.BluetoothDevicesFragment"
