@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvSensorNameHeading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sensor Name"
+                android:layout_marginBottom="6dp"
+                style="@style/HeadingText"/>
+
+            <TextView
+                android:id="@+id/tvSensorDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/accelerometer"
+                android:fontFamily="@font/senbold" />
+
+            <TextView
+                android:id="@+id/tvSensorVendor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Vendor : "
+                android:layout_marginBottom="6dp"
+                style="@style/SubHeadingText"/>
+
+            <TextView
+                android:id="@+id/tvSensorType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Type : "
+                android:layout_marginBottom="6dp"
+                style="@style/SubHeadingText"/>
+
+            <TextView
+                android:id="@+id/tvSensorResolution"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Resolution : "
+                android:layout_marginBottom="6dp"
+                style="@style/SubHeadingText" />
+
+            <TextView
+                android:id="@+id/tvSensorRange"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Range : "
+                android:layout_marginBottom="6dp"
+                style="@style/SubHeadingText" />
+
+            <TextView
+                android:id="@+id/tvSensorUnits"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Units : "
+                android:layout_marginBottom="16dp"
+                style="@style/SubHeadingText" />
+
+            <TextView
+                android:id="@+id/textView12"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Values :"
+                android:fontFamily="@font/senbold"
+                android:textSize="16dp"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tvSensorValues"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="x: \ny: \nz:"
+                style="@style/SubHeadingText"/>
+
+            <Button
+                android:id="@+id/btnCastSensor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="Cast to arduino" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

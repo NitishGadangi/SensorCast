@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">SensorCast</string>
+
+    <string name="accelerometer">An accelerometer sensor reports the acceleration of the device along the three sensor axes.
+        The measured acceleration includes both the physical acceleration (change of velocity) and the gravity.
+        The measurement is reported in the x, y, and z fields of sensors_event_t.acceleration.</string>
 </resources>

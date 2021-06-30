@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/sensorsOverviewFragment"
+        android:title="sensors"
+       android:icon="@drawable/ic_sensor"/>
+
+    <item android:id="@+id/sensorLogsFragment"
+        android:title="logs"
+        android:icon="@drawable/ic_terminal"/>
+
+
+</menu>
