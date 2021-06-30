@@ -1,6 +1,8 @@
 package com.nitish.sensorcast.ui
 
 import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -15,7 +17,7 @@ import com.nitish.sensorcast.helpers.SensorDetails
 import com.nitish.sensorcast.models.Status
 import com.nitish.sensorcast.repository.SharedPrefManager
 
-class SensorActivity : AppCompatActivity() {
+class SensorActivity : AppCompatActivity(), SensorEventListener {
 
     lateinit var binding: ActivityBaseBinding
 
@@ -33,8 +35,39 @@ class SensorActivity : AppCompatActivity() {
         ViewModelProvider(this, sensorViewModelProviderFactory).get(SensorViewModel::class.java)
     }
 
-    private val sensorManager by lazy {
+    val sensorManager by lazy {
         getSystemService(SENSOR_SERVICE) as SensorManager
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        event?.let {
+            if(it.sensor == viewModel.currentSensor.value){
+                if (viewModel.isCastEnabled.value == true) viewModel.sendData(event.values)
+                viewModel.currentSensorValues.postValue(event.values)
+            }
+        }
+    }
+
+    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
+        //TODO("Not yet implemented")
+    }
+
+    fun registerSensor(){
+        viewModel.currentSensor.observe(this, {
+            it?.let {
+                sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_NORMAL)
+            }
+        })
+    }
+
+    fun unregisterSensor(){
+        viewModel.currentSensor.postValue(null)
+        sensorManager.unregisterListener(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterSensor()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,18 +84,43 @@ class SensorActivity : AppCompatActivity() {
 
     private fun setUpObservers() {
         viewModel.isBtConnected.observe(this, {
+            updateHeader()
+        })
+
+        viewModel.isCastEnabled.observe(this, {
+            if (it == true) {
+                "${viewModel.isBtConnected.value?.msg} | ${viewModel.btName.value} | CASTING".also { appBarBinding.tvBtStatus.text = it }
+            } else {
+                updateHeader()
+            }
+        })
+
+        viewModel.bluetoothFragmentFisiblity.observe(this, {visible ->
+            if(visible) {
+                appBarBinding.btnBluetooth.setImageResource(R.drawable.ic_close)
+            }else {
+                appBarBinding.btnBluetooth.setImageResource(R.drawable.ic_bluetooth)
+            }
+        })
+    }
+
+    private fun updateHeader() {
+        viewModel.isBtConnected.value?.also {
             if (it == Status.CONNECTED) {
-                "${it.msg} | ${viewModel.btMac.value}".also { appBarBinding.tvBtStatus.text = it }
+                "${it.msg} | ${viewModel.btName.value}".also { appBarBinding.tvBtStatus.text = it }
             } else {
                 appBarBinding.tvBtStatus.text = it.msg
             }
             appBarBinding.tvBtStatus.setBackgroundColor(resources.getColor(it.color))
-        })
+        }
     }
 
     private fun setUpListeners() {
         appBarBinding.btnBluetooth.setOnClickListener {
-            navHostFragment.findNavController().navigate(R.id.bluetoothDevicesFragment)
+            if(viewModel.bluetoothFragmentFisiblity.value == false)
+                navHostFragment.findNavController().navigate(R.id.bluetoothDevicesFragment)
+            else
+                onBackPressed()
         }
     }
 }

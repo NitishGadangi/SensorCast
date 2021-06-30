@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.nitish.sensorcast.helpers.SensorDetails
+import com.nitish.sensorcast.helpers.round
 import com.nitish.sensorcast.helpers.toTime
 import com.nitish.sensorcast.models.Status
 import com.nitish.sensorcast.repository.SharedPrefManager
@@ -23,11 +24,21 @@ class SensorViewModel(
     private val sharedPrefManager: SharedPrefManager
 ) : AndroidViewModel(application) {
 
+    val bluetoothFragmentFisiblity = MutableLiveData(false)
+
     val btMac = MutableLiveData("")
+
+    val btName = MutableLiveData("")
 
     val isBtConnected = MutableLiveData(Status.DISCONNECTED)
 
     val inputStream = MutableLiveData(sharedPrefManager.sensorLog)
+
+    val isCastEnabled = MutableLiveData(false)
+
+    val currentSensor = MutableLiveData<Sensor?>(null)
+
+    val currentSensorValues = MutableLiveData(floatArrayOf())
 
     private var btSocket: BluetoothSocket? = null
 
@@ -54,10 +65,15 @@ class SensorViewModel(
         return base.substring(base.length - 17)
     }
 
+    private fun getMainBtDeviceName(base: String): String {
+        return base.substring(0, base.length - 18)
+    }
+
     fun updateMac(mac: String) {
         disconnectBtDevice()
         isBtConnected.postValue(Status.DISCONNECTED)
         btMac.postValue(getMainBtDeviceAddress(mac))
+        btName.postValue(getMainBtDeviceName(mac))
     }
 
     fun connectBtDevice(): String {
@@ -133,7 +149,9 @@ class SensorViewModel(
             null
         }
         btMac.postValue("")
+        btName.postValue("")
         isBtConnected.postValue(Status.DISCONNECTED)
+        isCastEnabled.postValue(false)
     }
 
     fun sendData(data: String) {
@@ -146,6 +164,10 @@ class SensorViewModel(
                 isBtConnected.postValue(Status.DISCONNECTED)
             }
         }
+    }
+
+    fun sendData(data: FloatArray){
+        sendData(data.map { it.round(1) }.joinToString(separator = " "))
     }
 
     private fun getSensorDetails(sensorType:Int, sensorName:String, sensorDesc:String, sensorUnits:String): SensorDetails? {

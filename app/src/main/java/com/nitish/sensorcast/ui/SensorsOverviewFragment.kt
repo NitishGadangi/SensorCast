@@ -31,6 +31,10 @@ class SensorsOverviewFragment : Fragment(R.layout.fragment_sensors_overview) {
             layoutManager = LinearLayoutManager(activity)
         }
         sensorsAdapter.setOnItemClickListener {
+            (requireActivity() as SensorActivity).sensorManager.getDefaultSensor(it.type).also { sensor ->
+                viewModel.currentSensor.postValue(sensor)
+                (requireActivity() as SensorActivity).registerSensor()
+            }
             val directions =
                 SensorsOverviewFragmentDirections.actionSensorsOverviewFragmentToSensorDetailsFragment(
                     it
