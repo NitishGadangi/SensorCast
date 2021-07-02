@@ -49,7 +49,7 @@ class SensorDetailsFragment : Fragment(R.layout.fragment_sensor_details) {
         viewModel.isCastEnabled.observe(viewLifecycleOwner, {
             if (it){
                 binding.btnCastSensor.apply {
-                    setText("Stop Casting")
+                    ("Stop Casting").also { text = it }
                     backgroundTintList = resources.getColorStateList(R.color.red)
                     setTextColor(resources.getColor(R.color.white))
                 }
