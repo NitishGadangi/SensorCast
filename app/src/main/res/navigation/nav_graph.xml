@@ -5,7 +5,7 @@
 
     <fragment
         android:id="@+id/sensorsOverviewFragment"
-        android:name="com.nitish.sensorcast.ui.SensorsOverviewFragment"
+        android:name="com.nitish.sensorcast.ui.fragments.SensorsOverviewFragment"
         android:label="SensorsOverviewFragment" >
         <action
             android:id="@+id/action_sensorsOverviewFragment_to_sensorDetailsFragment"
@@ -17,11 +17,11 @@
     </fragment>
     <fragment
         android:id="@+id/sensorLogsFragment"
-        android:name="com.nitish.sensorcast.ui.SensorLogsFragment"
+        android:name="com.nitish.sensorcast.ui.fragments.SensorLogsFragment"
         android:label="SensorLogsFragment" />
     <fragment
         android:id="@+id/sensorDetailsFragment"
-        android:name="com.nitish.sensorcast.ui.SensorDetailsFragment"
+        android:name="com.nitish.sensorcast.ui.fragments.SensorDetailsFragment"
         android:label="SensorDetailsFragment" >
         <argument
             android:name="sensor"
@@ -29,6 +29,6 @@
     </fragment>
     <fragment
         android:id="@+id/bluetoothDevicesFragment"
-        android:name="com.nitish.sensorcast.ui.BluetoothDevicesFragment"
+        android:name="com.nitish.sensorcast.ui.fragments.BluetoothDevicesFragment"
         android:label="BluetoothDevicesFragment" />
 </navigation>

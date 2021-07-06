@@ -7,6 +7,7 @@ import android.hardware.SensorManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
@@ -16,6 +17,9 @@ import com.nitish.sensorcast.databinding.FragmentAppBarBinding
 import com.nitish.sensorcast.helpers.SensorDetails
 import com.nitish.sensorcast.models.Status
 import com.nitish.sensorcast.repository.SharedPrefManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SensorActivity : AppCompatActivity(), SensorEventListener {
 
@@ -26,6 +30,8 @@ class SensorActivity : AppCompatActivity(), SensorEventListener {
     private val navHostFragment by lazy {
         supportFragmentManager.findFragmentByTag("navHostFragment") as NavHostFragment
     }
+
+    private var sensorEvent : SensorEvent? = null
 
     val viewModel: SensorViewModel by lazy {
         val sensorViewModelProviderFactory = SensorViewModelProviderFactory(
@@ -42,7 +48,7 @@ class SensorActivity : AppCompatActivity(), SensorEventListener {
     override fun onSensorChanged(event: SensorEvent?) {
         event?.let {
             if(it.sensor == viewModel.currentSensor.value){
-                if (viewModel.isCastEnabled.value == true) viewModel.sendData(event.values)
+                sensorEvent = event
                 viewModel.currentSensorValues.postValue(event.values)
             }
         }
@@ -80,6 +86,19 @@ class SensorActivity : AppCompatActivity(), SensorEventListener {
 
         setUpObservers()
         setUpListeners()
+
+        startCastListener()
+    }
+
+    private fun startCastListener() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            while (true){
+                if (viewModel.isCastEnabled.value == true) sensorEvent?.let {
+                    viewModel.sendData(it.values)
+                }
+                delay(500)
+            }
+        }
     }
 
     private fun setUpObservers() {

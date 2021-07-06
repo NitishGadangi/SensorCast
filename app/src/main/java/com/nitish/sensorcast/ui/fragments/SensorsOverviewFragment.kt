@@ -1,4 +1,4 @@
-package com.nitish.sensorcast.ui
+package com.nitish.sensorcast.ui.fragments
 
 import android.os.Bundle
 import android.view.View
@@ -7,6 +7,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nitish.sensorcast.R
 import com.nitish.sensorcast.databinding.FragmentSensorsOverviewBinding
+import com.nitish.sensorcast.ui.SensorActivity
 import com.nitish.sensorcast.ui.adapters.SensorsAdapter
 
 class SensorsOverviewFragment : Fragment(R.layout.fragment_sensors_overview) {
@@ -31,10 +32,11 @@ class SensorsOverviewFragment : Fragment(R.layout.fragment_sensors_overview) {
             layoutManager = LinearLayoutManager(activity)
         }
         sensorsAdapter.setOnItemClickListener {
-            (requireActivity() as SensorActivity).sensorManager.getDefaultSensor(it.type).also { sensor ->
-                viewModel.currentSensor.postValue(sensor)
-                (requireActivity() as SensorActivity).registerSensor()
-            }
+            (requireActivity() as SensorActivity).sensorManager.getDefaultSensor(it.type)
+                .also { sensor ->
+                    viewModel.currentSensor.postValue(sensor)
+                    (requireActivity() as SensorActivity).registerSensor()
+                }
             val directions =
                 SensorsOverviewFragmentDirections.actionSensorsOverviewFragmentToSensorDetailsFragment(
                     it

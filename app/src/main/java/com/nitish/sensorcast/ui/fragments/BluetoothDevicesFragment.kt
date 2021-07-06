@@ -1,4 +1,4 @@
-package com.nitish.sensorcast.ui
+package com.nitish.sensorcast.ui.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import com.nitish.sensorcast.R
 import com.nitish.sensorcast.databinding.FragmentBluetoothDevicesBinding
 import com.nitish.sensorcast.models.Status
+import com.nitish.sensorcast.ui.SensorActivity
 
 class BluetoothDevicesFragment : Fragment(R.layout.fragment_bluetooth_devices) {
 
@@ -32,7 +33,7 @@ class BluetoothDevicesFragment : Fragment(R.layout.fragment_bluetooth_devices) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-       viewModel.bluetoothFragmentFisiblity.postValue(true)
+        viewModel.bluetoothFragmentFisiblity.postValue(true)
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 

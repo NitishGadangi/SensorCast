@@ -40,6 +40,8 @@ class SensorViewModel(
 
     val currentSensorValues = MutableLiveData(floatArrayOf())
 
+    var isDataBeingSent = false
+
     private var btSocket: BluetoothSocket? = null
 
     private var btMonitorJob: Job? = null
@@ -158,19 +160,34 @@ class SensorViewModel(
         if (data == oldData) return
         oldData = data
         if (btSocket != null && btSocket?.isConnected == true) {
+            isDataBeingSent = true
             try {
-                btSocket?.outputStream?.write(data.toByteArray(charset = Charset.defaultCharset()))
+                btSocket?.outputStream?.apply {
+                    flush()
+                    write(data.toByteArray(charset = Charset.defaultCharset()))
+                }
             } catch (exp: IOException) {
                 isBtConnected.postValue(Status.DISCONNECTED)
             }
+            isDataBeingSent = false
         }
     }
 
-    fun sendData(data: FloatArray){
-        sendData(data.map { it.round(1) }.joinToString(separator = " "))
+    fun sendData(data: FloatArray) {
+        if(!isDataBeingSent) sendData(data.map { it.round(1) }.joinToString(separator = " "))
     }
 
-    private fun getSensorDetails(sensorType:Int, sensorName:String, sensorDesc:String, sensorUnits:String): SensorDetails? {
+    fun clearLogs() {
+        sharedPrefManager.clearSensorLog()
+        inputStream.postValue(sharedPrefManager.sensorLog)
+    }
+
+    private fun getSensorDetails(
+        sensorType: Int,
+        sensorName: String,
+        sensorDesc: String,
+        sensorUnits: String
+    ): SensorDetails? {
         val sensor = sensorManager.getDefaultSensor(sensorType) ?: return null
         return SensorDetails(
             name = sensorName,
@@ -186,13 +203,28 @@ class SensorViewModel(
 
     fun getSensorsList(): List<SensorDetails> {
         val result = mutableListOf<SensorDetails>()
-        getSensorDetails(Sensor.TYPE_ACCELEROMETER, "Accelerometer", ACCELEROMETER_DESCRIPTION, "m/s2")?.let {
+        getSensorDetails(
+            Sensor.TYPE_ACCELEROMETER,
+            "Accelerometer",
+            ACCELEROMETER_DESCRIPTION,
+            "m/s2"
+        )?.let {
             result.add(it)
         }
-        getSensorDetails(Sensor.TYPE_AMBIENT_TEMPERATURE, "Ambient Temperature", AMBIENT_TEMPERATURE_DESCRIPTION, "°C")?.let {
+        getSensorDetails(
+            Sensor.TYPE_AMBIENT_TEMPERATURE,
+            "Ambient Temperature",
+            AMBIENT_TEMPERATURE_DESCRIPTION,
+            "°C"
+        )?.let {
             result.add(it)
         }
-        getSensorDetails(Sensor.TYPE_MAGNETIC_FIELD, "Magnetic Field", MAGNETIC_FIELD_DESCRIPTION, "uT")?.let {
+        getSensorDetails(
+            Sensor.TYPE_MAGNETIC_FIELD,
+            "Magnetic Field",
+            MAGNETIC_FIELD_DESCRIPTION,
+            "uT"
+        )?.let {
             result.add(it)
         }
         getSensorDetails(Sensor.TYPE_GYROSCOPE, "Gyroscope", GYROSCOPE_DESCRIPTION, "rad/s")?.let {
@@ -210,7 +242,12 @@ class SensorViewModel(
         getSensorDetails(Sensor.TYPE_PRESSURE, "Pressure", PRESSURE_DESCRIPTION, "hPa")?.let {
             result.add(it)
         }
-        getSensorDetails(Sensor.TYPE_PRESSURE, "Relative Humidity", HUMIDITY_DESCRIPTION, "%")?.let {
+        getSensorDetails(
+            Sensor.TYPE_PRESSURE,
+            "Relative Humidity",
+            HUMIDITY_DESCRIPTION,
+            "%"
+        )?.let {
             result.add(it)
         }
         return result
@@ -220,26 +257,35 @@ class SensorViewModel(
         val BT_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
         const val MAC_SIZE = 17
         const val ARDUINO_SETUP_LINK = "https://github.com/NitishGadangi/SensorCast"
-        const val ACCELEROMETER_DESCRIPTION = "An accelerometer sensor reports the acceleration of the device along the three sensor axes." +
-                "The measured acceleration includes both the physical acceleration (change of velocity) and the gravity." +
-                "The measurement is reported in the x, y, and z fields of sensors_event_t.acceleration."
-        const val GYROSCOPE_DESCRIPTION = "A gyroscope sensor reports the rate of rotation of the device around the three sensor axes.\n" +
-                "Rotation is positive in the counterclockwise direction (right-hand rule). " +
-                "That is, an observer looking from some positive location on the x, y, or z axis at a device positioned on the origin would" +
-                "report positive rotation if the device appeared to be rotating counter clockwise. Note that this is the standard mathematical " +
-                "definition of positive rotation and does not agree with the aerospace definition of roll."
-        const val AMBIENT_TEMPERATURE_DESCRIPTION ="This sensor provides the ambient (room) temperature in degrees Celsius."
-        const val MAGNETIC_FIELD_DESCRIPTION = "A magnetic field sensor (also known as magnetometer) reports the ambient magnetic field, as measured along the three sensor axes."
-        const val HEART_RATE_DESCRIPTION = "A heart rate sensor reports the current heart rate of the person touching the device."
-        const val LIGHT_DESCRIPTION = "A light sensor reports the current illumination in SI lux units."
-        const val PRESSURE_DESCRIPTION = "A pressure sensor (also known as barometer) reports the atmospheric pressure in hectopascal (hPa).\n" +
-                "\n" +
-                "The readings are calibrated using\n" +
-                "- Temperature compensation\n" +
-                "- Factory bias calibration\n" +
-                "- Factory scale calibration"
-        const val HUMIDITY_DESCRIPTION = "A relative humidity sensor measures relative ambient air humidity and returns a value in percent."
-        const val PROXIMITY_DESCRIPTION = "A proximity sensor reports the distance from the sensor to the closest visible surface. Note that some proximity sensors only support a binary \"near\" or \"far\" measurement."
+        const val ACCELEROMETER_DESCRIPTION =
+            "An accelerometer sensor reports the acceleration of the device along the three sensor axes." +
+                    "The measured acceleration includes both the physical acceleration (change of velocity) and the gravity." +
+                    "The measurement is reported in the x, y, and z fields of sensors_event_t.acceleration."
+        const val GYROSCOPE_DESCRIPTION =
+            "A gyroscope sensor reports the rate of rotation of the device around the three sensor axes.\n" +
+                    "Rotation is positive in the counterclockwise direction (right-hand rule). " +
+                    "That is, an observer looking from some positive location on the x, y, or z axis at a device positioned on the origin would" +
+                    "report positive rotation if the device appeared to be rotating counter clockwise. Note that this is the standard mathematical " +
+                    "definition of positive rotation and does not agree with the aerospace definition of roll."
+        const val AMBIENT_TEMPERATURE_DESCRIPTION =
+            "This sensor provides the ambient (room) temperature in degrees Celsius."
+        const val MAGNETIC_FIELD_DESCRIPTION =
+            "A magnetic field sensor (also known as magnetometer) reports the ambient magnetic field, as measured along the three sensor axes."
+        const val HEART_RATE_DESCRIPTION =
+            "A heart rate sensor reports the current heart rate of the person touching the device."
+        const val LIGHT_DESCRIPTION =
+            "A light sensor reports the current illumination in SI lux units."
+        const val PRESSURE_DESCRIPTION =
+            "A pressure sensor (also known as barometer) reports the atmospheric pressure in hectopascal (hPa).\n" +
+                    "\n" +
+                    "The readings are calibrated using\n" +
+                    "- Temperature compensation\n" +
+                    "- Factory bias calibration\n" +
+                    "- Factory scale calibration"
+        const val HUMIDITY_DESCRIPTION =
+            "A relative humidity sensor measures relative ambient air humidity and returns a value in percent."
+        const val PROXIMITY_DESCRIPTION =
+            "A proximity sensor reports the distance from the sensor to the closest visible surface. Note that some proximity sensors only support a binary \"near\" or \"far\" measurement."
 
     }
 }

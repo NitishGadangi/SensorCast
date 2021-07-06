@@ -75,7 +75,7 @@ public class SharedPrefManager {
     public String updateSensorLog(String data) {
         String oldData = getSensorLog();
         oldData = oldData.equals(SENSOR_DATA_DEFAULT) ? "" : oldData;
-        String result = oldData + "\n" + data;
+        String result = data + "\n" + oldData;
         setSensorLog(result);
         return result;
     }
