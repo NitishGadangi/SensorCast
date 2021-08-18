@@ -43,4 +43,4 @@
 ## Download from here:
 > Will be available on PlayStore and Fdroid soon
 
-<h4>You can access all the releases from <a href="https://github.com/NitishGadangi/Privacy-Indicator-App/releases">Releases tab</a></h3>
+<h4>You can access all the releases from <a href="https://github.com/NitishGadangi/SensorCast/releases">Releases tab</a></h3>
